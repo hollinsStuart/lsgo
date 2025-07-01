@@ -1,1 +1,47 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Output of go build / run
+*.a
+*.o
+
+# Go workspace file (Go 1.18+)
+go.work
+go.work.sum
+
+# Dependency directories (if you use vendoring)
+vendor/
+
+# Test binary files
+*.coverprofile
+*.cover.out
+coverage.out
+
+# Editor files
+*.swp
+*.swo
+*~
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs (GoLand, IntelliJ)
 .idea/
+
+# macOS
+.DS_Store
+
+# Windows thumbnail cache
+Thumbs.db
+
+# Logs
+*.log
+
+# Git merge conflict files
+*.orig
