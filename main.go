@@ -106,7 +106,10 @@ func printTable(files []FileEntry) {
 		return
 	}
 	table.Footer([]string{"", "Total Files", fmt.Sprintf("%d", len(files)), ""})
-	table.Render()
+	err = table.Render()
+	if err != nil {
+		return
+	}
 }
 
 func main() {
