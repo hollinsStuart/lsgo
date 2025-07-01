@@ -57,8 +57,9 @@ func getFiles(path string) ([]FileEntry, error) {
 func printTable(files []FileEntry) {
 	data := make([][]string, len(files))
 	for i, f := range files {
+		icon := nerdIconForFile(f.Name, f.EType == Dir)
 		data[i] = []string{
-			f.Name,
+			fmt.Sprintf("%s %s", icon, f.Name),
 			string(f.EType),
 			fmt.Sprintf("%d", f.LenBytes),
 			f.Modified,
