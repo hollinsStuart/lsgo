@@ -101,7 +101,10 @@ func printTable(files []FileEntry) {
 	)
 
 	table.Header([]string{"Name", "Type", "Bytes", "Modified"})
-	table.Bulk(data)
+	err := table.Bulk(data)
+	if err != nil {
+		return
+	}
 	table.Footer([]string{"", "Total Files", fmt.Sprintf("%d", len(files)), ""})
 	table.Render()
 }
