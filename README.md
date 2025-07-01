@@ -3,3 +3,8 @@
 ## Features
 
 - Nerd icons
+- Rich icons
+
+## TODO
+
+- Command line args: `-l`, `-a`
