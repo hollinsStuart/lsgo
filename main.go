@@ -4,15 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
+	"github.com/hollinsStuart/lsgo/fileops"
 	"github.com/hollinsStuart/lsgo/table"
-	"github.com/hollinsStuart/lsgo/types"
 	flag "github.com/spf13/pflag"
 	"os"
 	"path/filepath"
+	"sort"
 )
 
-func getFiles(path string) ([]types.FileEntry, error) {
-	var data []types.FileEntry
+func getFiles(path string) ([]fileops.FileEntry, error) {
+	var data []fileops.FileEntry
 
 	entries, err := os.ReadDir(path)
 	if err != nil {
@@ -24,12 +25,12 @@ func getFiles(path string) ([]types.FileEntry, error) {
 		if err != nil {
 			continue
 		}
-		eType := types.File
+		eType := fileops.File
 		if entry.IsDir() {
-			eType = types.Dir
+			eType = fileops.Dir
 		}
 		modified := info.ModTime().Format("Mon Jan 2 2006")
-		data = append(data, types.FileEntry{
+		data = append(data, fileops.FileEntry{
 			Name:     entry.Name(),
 			EType:    eType,
 			LenBytes: info.Size(),
@@ -84,6 +85,15 @@ func main() {
 		}
 		fmt.Println(string(jsonData))
 	} else {
+		sort.Slice(files, func(i, j int) bool {
+			if files[i].EType == fileops.Dir && files[j].EType != fileops.Dir {
+				return true
+			}
+			if files[i].EType != fileops.Dir && files[j].EType == fileops.Dir {
+				return false
+			}
+			return files[i].Name < files[j].Name
+		})
 		table.PrintTable(files)
 	}
 }
