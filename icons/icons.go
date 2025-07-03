@@ -67,7 +67,7 @@ func NerdIconForFile(name string, isDir bool) string {
 	case ".md":
 		return "󰂺"
 	case ".txt":
-		return ""
+		return ""
 	default:
 		return "" // generic file
 	}
