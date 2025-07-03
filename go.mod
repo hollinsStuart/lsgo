@@ -5,6 +5,7 @@ go 1.23.5
 require (
 	github.com/fatih/color v1.18.0
 	github.com/olekukonko/tablewriter v1.0.7
+	github.com/spf13/pflag v1.0.6
 )
 
 require (
