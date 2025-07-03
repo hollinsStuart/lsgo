@@ -1,4 +1,4 @@
-package table
+package output
 
 import (
 	"fmt"
@@ -68,4 +68,64 @@ func PrintTable(files []fileops.FileEntry) {
 	if err != nil {
 		return
 	}
+}
+
+func PrintLong(files []fileops.FileEntry) {
+	grey := color.New(color.FgHiBlack)
+	for _, f := range files {
+		perm := permissionsString(f.Mode)
+		size := fileops.HumanBytes(f.LenBytes)
+		if f.EType == fileops.Dir {
+			size = grey.Sprint("   \u001B[1m-\u001B[0m")
+		}
+		links := fmt.Sprintf("%d", f.NumLinks)
+		icon := icons.NerdIconForFile(f.Name, f.EType == fileops.Dir)
+
+		// Example like eza/ls -l:
+		// drwxr-xr-x  3 user  group  4.0k Jul  3 15:04   cmd
+		fmt.Printf("\u001B[1m%s\u001B[0m %3s %-8s %-8s %4s %s %s %s\n",
+			color.New(color.FgHiWhite).Sprint(perm),
+			links,
+			color.New(color.FgYellow).Sprint(f.Owner),
+			color.New(color.FgCyan).Sprint(f.Group),
+			size,
+			color.New(color.FgHiMagenta).Sprint(f.Modified),
+			icon,
+			f.Name,
+		)
+	}
+
+}
+
+// permissionsString converts FileMode to string like drwxr-xr-x
+func permissionsString(mode os.FileMode) string {
+	s := ""
+	switch {
+	case mode.IsDir():
+		s += "d"
+	case mode&os.ModeSymlink != 0:
+		s += "l"
+	default:
+		s += "-"
+	}
+	perms := []os.FileMode{
+		0400, 0200, 0100, // owner
+		0040, 0020, 0010, // group
+		0004, 0002, 0001, // other
+	}
+	for i, p := range perms {
+		if mode&p != 0 {
+			switch i % 3 {
+			case 0:
+				s += "r"
+			case 1:
+				s += "w"
+			case 2:
+				s += "x"
+			}
+		} else {
+			s += "-"
+		}
+	}
+	return s
 }
