@@ -1,6 +1,9 @@
 package fileops
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type EntryType string
 
@@ -27,4 +30,32 @@ func HumanBytes(bytes int64) string {
 		exp++
 	}
 	return fmt.Sprintf("%.1f%c", float64(bytes)/float64(div), "kMGTPE"[exp])
+}
+
+func GetFiles(path string) ([]FileEntry, error) {
+	var data []FileEntry
+
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, entry := range entries {
+		info, err := entry.Info()
+		if err != nil {
+			continue
+		}
+		eType := File
+		if entry.IsDir() {
+			eType = Dir
+		}
+		modified := info.ModTime().Format("Mon Jan 2 2006")
+		data = append(data, FileEntry{
+			Name:     entry.Name(),
+			EType:    eType,
+			LenBytes: info.Size(),
+			Modified: modified,
+		})
+	}
+	return data, nil
 }
