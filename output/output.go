@@ -2,14 +2,34 @@ package output
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/fatih/color"
 	"github.com/hollinsStuart/lsgo/fileops"
 	"github.com/hollinsStuart/lsgo/icons"
 	"github.com/olekukonko/tablewriter"
 	"github.com/olekukonko/tablewriter/renderer"
 	"github.com/olekukonko/tablewriter/tw"
-	"os"
 )
+
+func PrintDefault(files []fileops.FileEntry) {
+	for _, f := range files {
+		icon := icons.NerdIconForFile(f.Name, f.EType == fileops.Dir)
+		if f.EType == fileops.Dir {
+			fmt.Printf("%s  ", folderString(icon, f.Name))
+		} else {
+			fmt.Printf("%s %s  ", icon, f.Name)
+		}
+	}
+	fmt.Println()
+}
+
+// @return returns a folder string with no spaces
+func folderString(icon, name string) string {
+	blue := color.New(color.FgBlue)
+	fileString := blue.Add(color.Bold).Sprintf("%s %s", icon, name)
+	return fileString
+}
 
 func PrintTable(files []fileops.FileEntry) {
 	data := make([][]string, len(files))
