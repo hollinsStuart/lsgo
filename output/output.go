@@ -96,37 +96,56 @@ func PrintLong(files []fileops.FileEntry) {
 		perm := permissionsString(f.Mode)
 		size := fileops.HumanBytes(f.LenBytes)
 		if f.EType == fileops.Dir {
-			size = grey.Sprint("   \u001B[1m-\u001B[0m")
+			size = grey.Add(color.Bold).Sprint("   -")
 		}
-		links := fmt.Sprintf("%d", f.NumLinks)
 		icon := icons.NerdIconForFile(f.Name, f.EType == fileops.Dir)
 
 		// Example like eza/ls -l:
-		// drwxr-xr-x  3 user  group  4.0k Jul  3 15:04   cmd
-		fmt.Printf("\u001B[1m%s\u001B[0m %3s %-8s %-8s %4s %s %s %s\n",
-			color.New(color.FgHiWhite).Sprint(perm),
-			links,
-			color.New(color.FgYellow).Sprint(f.Owner),
-			color.New(color.FgCyan).Sprint(f.Group),
+		// drwxr-xr-x    - hollins staff 3 Jul 21:43  cmd
+		fmt.Printf("%s %4s %-8s %-8s %s %s %s\n",
+			perm,
 			size,
+			color.New(color.FgYellow).Add(color.Bold).Sprint(f.Owner),
+			color.New(color.FgCyan).Sprint(f.Group),
 			color.New(color.FgHiMagenta).Sprint(f.Modified),
 			icon,
 			f.Name,
 		)
 	}
-
 }
 
 // permissionsString converts FileMode to string like drwxr-xr-x
 func permissionsString(mode os.FileMode) string {
+	yellow := color.New(color.FgYellow)
+	blue := color.New(color.FgBlue)
+	green := color.New(color.FgGreen)
+	red := color.New(color.FgRed)
+	grey := color.New(color.FgHiBlack)
+
+	// HACK: MUST define regular chars first
+	// normal versions
+	rCharRegular := yellow.Sprint("r")
+	wCharRegular := red.Sprint("w")
+	xCharRegular := green.Sprint("x")
+
+	// use bold versions
+	rCharBold := yellow.Add(color.Bold).Sprint("r")
+	wCharBold := red.Add(color.Bold).Sprint("w")
+	xCharBold := green.Add(color.Bold).Sprint("x")
+
+	dashChar := grey.Add(color.Bold).Sprint("-")
+	lChar := blue.Sprint("l")
+	dChar := blue.Add(color.Bold).Sprint("d")
+
 	s := ""
 	switch {
 	case mode.IsDir():
-		s += "d"
+		s += dChar
 	case mode&os.ModeSymlink != 0:
-		s += "l"
+		// TODO: we will need to handle symlinks properly
+		s += lChar
 	default:
-		s += "-"
+		s += "."
 	}
 	perms := []os.FileMode{
 		0400, 0200, 0100, // owner
@@ -134,18 +153,33 @@ func permissionsString(mode os.FileMode) string {
 		0004, 0002, 0001, // other
 	}
 	for i, p := range perms {
+		var out string
 		if mode&p != 0 {
 			switch i % 3 {
 			case 0:
-				s += "r"
+				out = rCharRegular
 			case 1:
-				s += "w"
+				out = wCharRegular
 			case 2:
-				s += "x"
+				out = xCharRegular
 			}
 		} else {
-			s += "-"
+			out = dashChar
 		}
+
+		// make the first group (owner) bold
+		if i < 3 {
+			switch i % 3 {
+			case 0:
+				out = rCharBold
+			case 1:
+				out = wCharBold
+			case 2:
+				out = xCharBold
+			}
+		}
+
+		s += out
 	}
 	return s
 }
