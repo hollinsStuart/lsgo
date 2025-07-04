@@ -6,6 +6,9 @@ func NerdIconForFile(name string, isDir bool) string {
 	if isDir {
 		if name == ".git" {
 			return "" // git dir
+		} else if name == "empty" {
+			// TODO: add empty folder icon
+			return "" // empty folder
 		}
 		return "" // folder
 	}
@@ -13,9 +16,9 @@ func NerdIconForFile(name string, isDir bool) string {
 	// exact matches
 	switch name {
 	case "Makefile", "makefile":
-		return "" // make
+		return ""
 	case "CMakeLists.txt":
-		return "" // config
+		return ""
 	case ".gitignore":
 		return ""
 	case "Dockerfile":
@@ -55,7 +58,7 @@ func NerdIconForFile(name string, isDir bool) string {
 	case ".html", ".htm":
 		return "" // HTML
 	case ".css":
-		return "" // CSS
+		return "" // CSS
 	case ".scss", ".sass":
 		return "" // SCSS
 	case ".json":
